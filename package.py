@@ -1,7 +1,8 @@
 name = "shotgrid_stubs"
 version = "0.0.0"
 
-requires = ["mypy", "python-3"]
+requires = ["python-3"]
+build_requires=["mypy"]
 
 build_command = [
         "python3",
