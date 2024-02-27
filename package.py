@@ -3,7 +3,12 @@ version = "0.0.0"
 
 requires = ["mypy", "python-3"]
 
-build_command = "python3 {root}/build.py"
+build_command = [
+        "python3",
+        "{root}/build.py",
+        "--source", "tk-core", "python/tank", "out/tank",
+        "--source", "tk-multi-publish2", "python/tk_multi_publish2", "out/python/tk_multi_publish2"
+]
 
 
 def commands():

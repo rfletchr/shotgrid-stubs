@@ -3,6 +3,8 @@ import sys
 import os
 import subprocess
 import typing
+import argparse
+
 
 
 def get_git_url(repo):
@@ -20,33 +22,23 @@ def stubgen(directory):
     subprocess.check_call(cmd)
 
 
-class Args(typing.NamedTuple):
-    repo:str
-    source_rel: str 
-    paths: typing.List[str]
 
+def build(repo, source_rel, target_rels):
+    cwd = os.getcwd()
+    install = os.environ.get("REZ_BUILD_INSTALL") == "1"
+    rez_install_path = os.environ.get("REZ_BUILD_INSTALL_PATH")
 
-repo_names = [
-        Args("tk-core", "python/tank", ["out/tank"]),
-        Args("tk-multi-publish2", "python/tk_multi_publish2", ["out/python/tk_multi_publish2"]),
-]
-
-cwd = os.getcwd()
-install = os.environ.get("REZ_BUILD_INSTALL") == "1"
-rez_install_path = os.environ.get("REZ_BUILD_INSTALL_PATH")
-
-for args in repo_names:
-    path = os.path.join(cwd, args.repo)
-    url = get_git_url(args.repo)
+    path = os.path.join(cwd, repo)
+    url = get_git_url(repo)
     if not os.path.exists(path):
         git_clone(url, path)
     
-    stubgen(os.path.join(path, args.source_rel))
+    stubgen(os.path.join(path, source_rel))
 
     if not install:
-        continue
+        return
 
-    for relpath in args.paths:
+    for relpath in target_rels:
         source_path = os.path.join(cwd, relpath)
         install_path = os.path.join(rez_install_path, os.path.basename(relpath))
         print(f"Installing: {source_path} -> {install_path}")
@@ -54,3 +46,19 @@ for args in repo_names:
             shutil.rmtree(install_path)
         shutil.copytree(source_path, install_path)
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source", nargs="+", dest="sources", action="append")
+
+    args = parser.parse_args()
+    print(args)
+    for source in args.sources:
+        print(source)
+        repo = source[0]
+        source_rel = source[1]
+        target_rels = source[2:]
+        build(repo, source_rel, target_rels)
+
+
+if __name__ == "__main__":
+    main()
