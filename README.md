@@ -1,5 +1,5 @@
 # Shotgrid Stubs
-This rez package generates shotgrid stubs using MyPy and makes developing shotgrid apps a little more convenient.
+This rez package generates shotgrid stubs using MyPy enabling much richer IDE completions.
 
 ## Dependencies
 ```
